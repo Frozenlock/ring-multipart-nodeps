@@ -221,9 +221,9 @@
           ;; Process request with progress tracking
           result (multipart-params-request
                    request
-                   {:progress-fn (fn [bytes is-file?]
+                   {:progress-fn (fn [req bytes content-length item-count]
                                    (swap! progress-updates conj bytes)
-                                   (when is-file?
+                                   (when (pos? item-count)
                                      (swap! file-updates conj bytes)))})]
 
       ;; Check that progress was tracked

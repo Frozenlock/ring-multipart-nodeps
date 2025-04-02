@@ -71,7 +71,7 @@
 
 (defn- read-bytes-until
   "Optimized version that reads in chunks for better performance.
-   Optional progress-fn will be called with bytes read."
+   Optional progress-fn will be called with total bytes read during processing."
   [^PushbackInputStream pbin ^bytes boundary & [progress-fn]]
   (let [boundary-len (alength boundary)
         buffer-size chunk-size
@@ -341,7 +341,7 @@
               part-body-bytes (read-bytes-until pbin boundary-bytes
                                                (when progress-fn
                                                  (fn [bytes]
-                                                   (progress-fn bytes current-file?))))
+                                                   (progress-fn (:request opts) bytes (:content-length (:request opts)) (if current-file? 1 0)))))
               _               (when (nil? part-body-bytes) (throw (ex-info "Unexpected EOF reading part body" {:name part-name})))
 
               next-marker-type (let [char1 (.read pbin)
@@ -401,7 +401,9 @@
                        :filename, :content-type, :stream, :part-headers.
                        Default is the temp-file-store. For in-memory storage use
                        the default-byte-array-store function.
-  :progress-fn       - Optional function called with (bytes-read is-file?) for tracking upload progress."
+  :progress-fn       - a function that gets called during uploads. The
+                       function should expect four parameters: request,
+                       bytes-read, content-length, and item-count."
  ([request]
   (multipart-params-request request {}))
  ([request options]
