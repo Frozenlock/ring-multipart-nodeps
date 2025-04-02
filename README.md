@@ -39,10 +39,28 @@ The API mirrors Ring's standard multipart handling:
       (mp/wrap-multipart-params
         {:store (mp/temp-file-store)  ;; or mp/default-byte-array-store for in-memory
          :encoding "UTF-8"
-         :progress-fn (fn [bytes is-file?]
-                        (when is-file?
-                          (println "Processed" bytes "bytes")))})))
+         :fallback-encoding "UTF-8"
+         :progress-fn (fn [request bytes-read content-length item-count]
+                        (println "Processed" bytes-read "of" content-length "bytes"))})))
 ```
+
+### Supported Options
+
+| Option               | Description                                                                                                                             |
+|----------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
+| `:encoding`          | Forced character encoding for fields. Overrides part Content-Type.                                                                      |
+| `:fallback-encoding` | Encoding used if part has no Content-Type charset. Defaults to request encoding or UTF-8.                                               |
+| `:store`             | Function to handle file uploads. Takes map with `:filename`, `:content-type`, `:stream`, `:part-headers`. Default is `temp-file-store`. |
+| `:progress-fn`       | Function called during uploads with parameters: request, bytes-read, content-length, item-count.                                        |
+
+### Not Yet Supported
+
+The following options from Ring's original middleware are not yet supported:
+
+- `:max-file-size` - Limit on maximum file size in bytes
+- `:max-file-count` - Limit on maximum number of files in a request
+- `:error-handler` - Custom handler for when limits are exceeded
+- Special handling of a part named `_charset_` for encoding detection
 
 
 ## License

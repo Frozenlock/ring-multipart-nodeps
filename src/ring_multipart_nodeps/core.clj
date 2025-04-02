@@ -427,8 +427,19 @@
   :multipart-params - a map of multipart parameters from the request body.
   :params           - merges multipart-params into existing :params.
 
-  Accepts options map (see `multipart-params-request`). Does simple error
-  handling; throws exceptions on parsing errors."
+  Accepts the following options:
+
+  :encoding          - Forced character encoding for fields. Overrides part Content-Type.
+  :fallback-encoding - Encoding used if part has no Content-Type charset. Defaults
+                       to request encoding or UTF-8.
+  :store             - Function to handle file uploads. Takes map with
+                       :filename, :content-type, :stream, :part-headers.
+                       Default is the temp-file-store. For in-memory storage use
+                       the default-byte-array-store function.
+  :progress-fn       - Function called during uploads with parameters: request,
+                       bytes-read, content-length, item-count.
+
+  Does simple error handling; throws exceptions on parsing errors."
  ([handler]
   (wrap-multipart-params handler {}))
  ([handler options]
