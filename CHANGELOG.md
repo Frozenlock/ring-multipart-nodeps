@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [Unreleased]
+### Changed
+- Renamed `default-byte-array-store` to `byte-array-store`
+
 ## [1.1.0] - 2025-04-02
 ### Changed
 - Updated the :progress-fn signature to match Ring's original middleware

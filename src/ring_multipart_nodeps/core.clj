@@ -273,7 +273,7 @@
           (.write header-bytes (unchecked-byte b))
           (recur (.read pbin) 0 (inc read-count)))))))
 
-(defn default-byte-array-store
+(defn byte-array-store
   "Stores uploaded files in memory as byte arrays"
   [{:keys [filename content-type stream] :as file-info}]
   (with-open [out (ByteArrayOutputStream.)]
@@ -400,7 +400,7 @@
   :store             - Function to handle file uploads. Takes map with
                        :filename, :content-type, :stream, :part-headers.
                        Default is the temp-file-store. For in-memory storage use
-                       the default-byte-array-store function.
+                       the byte-array-store function.
   :progress-fn       - a function that gets called during uploads. The
                        function should expect four parameters: request,
                        bytes-read, content-length, and item-count."
@@ -435,7 +435,7 @@
   :store             - Function to handle file uploads. Takes map with
                        :filename, :content-type, :stream, :part-headers.
                        Default is the temp-file-store. For in-memory storage use
-                       the default-byte-array-store function.
+                       the byte-array-store function.
   :progress-fn       - Function called during uploads with parameters: request,
                        bytes-read, content-length, item-count.
 

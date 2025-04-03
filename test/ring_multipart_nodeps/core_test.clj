@@ -114,7 +114,7 @@
 (deftest test-multipart-stream-parsing
   (testing "Parses standard multipart request correctly"
     (let [request (make-request test-body-standard)
-          processed (multipart-params-request request {:store default-byte-array-store})
+          processed (multipart-params-request request {:store byte-array-store})
           parsed (:multipart-params processed)]
       (is (= ["value1" "value1-again"] (get parsed "field1")))
       (is (= "Content of example.txt."
@@ -122,7 +122,7 @@
 
   (testing "Handles requests without final CRLF"
     (let [request (make-request test-body-no-final-crlf)
-          processed (multipart-params-request request {:store default-byte-array-store})
+          processed (multipart-params-request request {:store byte-array-store})
           parsed (:multipart-params processed)]
       (is (= ["value1" "value1-again"] (get parsed "field1")))
       (is (= "Content of example.txt."
@@ -131,7 +131,7 @@
   (testing "Respects part-specific charset"
     (let [request (make-request test-body-charset)
           processed (multipart-params-request request {:encoding "UTF-8"
-                                                      :store default-byte-array-store})
+                                                      :store byte-array-store})
           parsed (:multipart-params processed)]
       (is (= "value-with-charset" (get parsed "with-charset"))))))
 
@@ -172,7 +172,7 @@
                         :params {}
                         :body (ByteArrayInputStream. (.toByteArray test-body-stream))}
           ;; Use the byte-array-store explicitly since we want to test with bytes
-          processed (multipart-params-request test-request {:store default-byte-array-store})
+          processed (multipart-params-request test-request {:store byte-array-store})
           parsed (:multipart-params processed)]
 
       (is (map? (get parsed "image")))
@@ -415,7 +415,7 @@
           request {:content-type (str "multipart/form-data; boundary=" test-boundary)
                   :character-encoding "UTF-8"
                   :body (ByteArrayInputStream. (.toByteArray out))}
-          result (multipart-params-request request {:store default-byte-array-store})
+          result (multipart-params-request request {:store byte-array-store})
           result-data (get-in result [:multipart-params "file"])
           processed-data (:bytes result-data)]
 

@@ -37,7 +37,7 @@ The API mirrors Ring's standard multipart handling:
 (def app-with-options
   (-> handler
       (mp/wrap-multipart-params
-        {:store (mp/temp-file-store)  ;; or mp/default-byte-array-store for in-memory
+        {:store (mp/temp-file-store)  ;; or mp/byte-array-store for in-memory
          :encoding "UTF-8"
          :fallback-encoding "UTF-8"
          :progress-fn (fn [request bytes-read content-length item-count]
