@@ -2,6 +2,8 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
 ## [Unreleased]
+
+## [1.2.0] - 2025-04-03
 ### Changed
 - Renamed `default-byte-array-store` to `byte-array-store`
 - Updated `byte-array-store` to match Ring's original middleware API
