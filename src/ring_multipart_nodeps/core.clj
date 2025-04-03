@@ -274,11 +274,19 @@
           (recur (.read pbin) 0 (inc read-count)))))))
 
 (defn byte-array-store
-  "Stores uploaded files in memory as byte arrays"
-  [{:keys [filename content-type stream] :as file-info}]
-  (with-open [out (ByteArrayOutputStream.)]
-    (io/copy stream out)
-    (assoc file-info :bytes (.toByteArray out) :size (.size out) :stream :consumed)))
+  "Returns a function that stores multipart file parameters as an array of bytes.
+   The multipart parameters will be stored as maps with the following keys:
+  
+   :filename     - the name of the uploaded file
+   :content-type - the content type of the uploaded file
+   :bytes        - an array of bytes containing the uploaded content"
+  []
+  (fn [{:keys [filename content-type stream]}]
+    (with-open [out (ByteArrayOutputStream.)]
+      (io/copy stream out)
+      {:filename filename
+       :content-type content-type
+       :bytes (.toByteArray out)})))
 
 (defn temp-file-store
   "Stores uploaded files to temporary files on disk.

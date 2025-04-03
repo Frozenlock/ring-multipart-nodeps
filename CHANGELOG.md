@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file. This change
 ## [Unreleased]
 ### Changed
 - Renamed `default-byte-array-store` to `byte-array-store`
+- Updated `byte-array-store` to match Ring's original middleware API
+  - Now returns a function when called
+  - Returns only `:filename`, `:content-type`, and `:bytes` keys
 
 ## [1.1.0] - 2025-04-02
 ### Changed
