@@ -3,10 +3,11 @@
             [ring-multipart-nodeps.core :refer :all]
             [ring-multipart-nodeps.temp-file :as temp-file]
             [clojure.java.io :as io])
-  (:import [java.io ByteArrayInputStream ByteArrayOutputStream File FileInputStream]))
+  (:import [java.io ByteArrayInputStream ByteArrayOutputStream File FileInputStream]
+           [java.util Arrays]))
 
 (defn make-test-stream [body-str]
-  (ByteArrayInputStream. (.getBytes body-str "UTF-8")))
+  (ByteArrayInputStream. (.getBytes ^String body-str "UTF-8")))
 
 (defn bytes->string [bytes]
   (String. ^bytes bytes "UTF-8"))
@@ -177,13 +178,13 @@
 
       (is (map? (get parsed "image")))
       (is (= 8 (count (:bytes (get parsed "image")))))
-      (is (= -119 (aget (:bytes (get parsed "image")) 0)))
+      (is (= -119 (aget ^bytes (:bytes (get parsed "image")) 0)))
       (is (= "test.png" (:filename (get parsed "image"))))
 
       ;; Ensure exact byte data preservation
       (let [parsed-bytes (:bytes (get parsed "image"))]
-        (is (= (alength png-header) (alength parsed-bytes)))
-        (is (java.util.Arrays/equals ^bytes png-header ^bytes parsed-bytes))))))
+        (is (= (alength png-header) (alength ^bytes parsed-bytes)))
+        (is (Arrays/equals ^bytes png-header ^bytes parsed-bytes))))))
 
 
 (deftest test-progress-tracking
@@ -336,7 +337,7 @@
       (is (= (:content-type file-param) "text/plain"))
       (is (= (:size file-param) (alength file-bytes)))
       (is (instance? java.io.File (:tempfile file-param)))
-      (is (.exists (:tempfile file-param)))
+      (is (.exists ^File (:tempfile file-param)))
       (is (= (slurp (:tempfile file-param)) file-content)))))
 
 
@@ -420,19 +421,19 @@
           processed-data (:bytes result-data)]
 
       ;; Check size
-      (is (= (alength original-data) (alength processed-data))
+      (is (= (alength original-data) (alength ^bytes processed-data))
           "Original and processed data sizes should match")
 
       ;; Check marker patterns at chunk boundaries
       (doseq [boundary-pos (range chunk-size (- total-size 10) chunk-size)]
         (let [expected (vec (take 6 (map #(bit-and % 0xFF)
-                                        (for [i (range 6)] (aget original-data (+ boundary-pos i))))))
+                                        (for [i (range 6)] (aget ^bytes original-data (+ boundary-pos i))))))
               actual (vec (take 6 (map #(bit-and % 0xFF)
-                                      (for [i (range 6)] (aget processed-data (+ boundary-pos i))))))]
+                                      (for [i (range 6)] (aget ^bytes processed-data (+ boundary-pos i))))))]
 
           (is (= expected actual)
               (format "Data at chunk boundary %d should be preserved" boundary-pos))))
 
       ;; Check full data integrity
-      (is (java.util.Arrays/equals original-data processed-data)
+      (is (Arrays/equals ^bytes original-data ^bytes processed-data)
           "Data should be preserved exactly across chunk boundaries"))))

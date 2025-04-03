@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file. This change
 
 ## [Unreleased]
 
+## [1.2.1] - 2025-04-03
+### Changed
+- Added type hints to eliminate reflection warnings and improve performance
+
 ## [1.2.0] - 2025-04-03
 ### Changed
 - Renamed `default-byte-array-store` to `byte-array-store`

@@ -2,13 +2,14 @@
   (:require [clojure.string :as str]
             [clojure.java.io :as io]
             [ring-multipart-nodeps.temp-file :as temp-file])
-  (:import [java.io ByteArrayOutputStream InputStream PushbackInputStream ByteArrayInputStream]))
+  (:import [java.io ByteArrayOutputStream InputStream PushbackInputStream ByteArrayInputStream]
+           [java.util Arrays]))
 
 ;; --- Configuration ---
 (def ^:private default-buffer-size 8192) ; Read buffer size
 (def ^:private max-header-size 8192)     ; Max bytes to read for headers per part
 (def ^:private chunk-size 8192)          ; Chunk size for buffered reads
-(def ^:private crlf-bytes (.getBytes "\r\n" "US-ASCII"))
+(def ^:private ^"[B" crlf-bytes (.getBytes "\r\n" "US-ASCII"))
 (def ^:private crlf-len (alength crlf-bytes))
 
 ;; --- Utilities ---
@@ -254,7 +255,7 @@
 
         (= (unchecked-byte b) (aget boundary match-idx))
         (if (= (inc match-idx) (alength boundary))
-          (->> (String. (.toByteArray header-bytes) encoding)
+          (->> (String. ^bytes (.toByteArray header-bytes) ^String encoding)
                (str/split-lines)
                (map #(str/split % #":\s*" 2))
                (filter #(= 2 (count %)))
@@ -299,7 +300,7 @@
       ;; Stream copy using a buffer, never loading entire file into memory
       (let [buffer (byte-array chunk-size)]
         (loop []
-          (let [bytes-read (.read stream buffer 0 chunk-size)]
+          (let [bytes-read (.read ^InputStream stream buffer 0 chunk-size)]
             (when (pos? bytes-read)
               (swap! written-bytes + bytes-read)
               (.write out buffer 0 bytes-read)
@@ -327,7 +328,7 @@
 
     ;; Consume initial boundary line
     (let [first-boundary (read-bytes-until pbin boundary-bytes)]
-      (when (or (nil? first-boundary) (not (zero? (alength first-boundary))))
+      (when (or (nil? first-boundary) (not (zero? (alength ^bytes first-boundary))))
         (throw (ex-info "Invalid multipart start" {:boundary boundary-str})))
       (read-crlf pbin))
 
@@ -370,9 +371,9 @@
                                        (throw (ex-info "Invalid sequence after boundary" {:name part-name, :char1 char1, :char2 char2})))))
 
               ;; Trim trailing CRLF from all parts for consistency
-              trimmed-body-bytes (let [body-len (alength part-body-bytes)]
+              trimmed-body-bytes (let [body-len (alength ^bytes part-body-bytes)]
                                   (if (ends-with? part-body-bytes crlf-bytes)
-                                    (java.util.Arrays/copyOfRange part-body-bytes 0 (- body-len crlf-len))
+                                    (Arrays/copyOfRange ^bytes part-body-bytes 0 (int (- body-len crlf-len)))
                                     part-body-bytes))
 
               part-value (if filename
