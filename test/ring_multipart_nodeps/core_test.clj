@@ -273,14 +273,16 @@
           wrapped (wrap-multipart-params handler)]
       (is (= req (wrapped req)))))
 
-  (testing "middleware returns error response on parse exception"
+  (testing "middleware passes parse exceptions to handler"
     (let [bad-body (str "--" test-boundary "\r\nInvalid Headers")
           bad-req (make-request bad-body)
-          handler (fn [_] (throw (Exception. "Should not be called")))
-          wrapped (wrap-multipart-params handler {:silent true})
-          response (wrapped bad-req)]
-      (is (= 500 (:status response)))
-      (is (= "text/plain" (get-in response [:headers "Content-Type"])))))
+          handler-called (atom false)
+          handler (fn [req]
+                    (reset! handler-called true)
+                    {:status 200})
+          wrapped (wrap-multipart-params handler)]
+      (is (thrown? Exception (wrapped bad-req)))
+      (is (not @handler-called))))
 
   (testing "async handler receives parsed request and can handle errors"
     (let [respond-called (atom false)
@@ -303,11 +305,15 @@
       (reset! respond-called false)
       (reset! raise-called false)
 
-      (error-wrapped
-        (make-request test-body-standard)
-        #(do (reset! respond-called true))
-        #(do (reset! raise-called true)
-             (is (instance? clojure.lang.ExceptionInfo %))))
+      (try
+        (error-wrapped
+          (make-request test-body-standard)
+          #(do (reset! respond-called true))
+          #(do (reset! raise-called true)
+               (is (instance? clojure.lang.ExceptionInfo %))))
+
+        (catch Exception e
+          (reset! raise-called true)))
 
       (is (not @respond-called))
       (is @raise-called))))

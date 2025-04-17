@@ -277,7 +277,7 @@
 (defn byte-array-store
   "Returns a function that stores multipart file parameters as an array of bytes.
    The multipart parameters will be stored as maps with the following keys:
-  
+
    :filename     - the name of the uploaded file
    :content-type - the content type of the uploaded file
    :bytes        - an array of bytes containing the uploaded content"
@@ -448,23 +448,12 @@
   :progress-fn       - Function called during uploads with parameters: request,
                        bytes-read, content-length, item-count.
 
-  Does simple error handling; throws exceptions on parsing errors."
+  Throws on parsing errors."
  ([handler]
   (wrap-multipart-params handler {}))
  ([handler options]
   (fn handle-multipart-request
     ([request]
-     (try
-       (handler (multipart-params-request request options))
-       (catch Exception e
-         ;; Basic error response - A real application should use :error-handler
-         (when-not (:silent options)
-           (if (instance? clojure.lang.ExceptionInfo e)
-             (println "Error parsing multipart request:" (:message (ex-data e)) e)
-             (println "Error parsing multipart request:" e)))
-         {:status 500 :headers {"Content-Type" "text/plain"} :body "Server error parsing multipart request"})))
+     (handler (multipart-params-request request options)))
     ([request respond raise]
-     (try
-       (handler (multipart-params-request request options) respond raise)
-       (catch Exception e
-         (raise e)))))))
+     (handler (multipart-params-request request options) respond raise)))))

@@ -2,6 +2,8 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
 ## [Unreleased]
+### Removed
+- Exception catching from `wrap-multipart-params` middleware
 
 ## [1.2.1] - 2025-04-03
 ### Changed
