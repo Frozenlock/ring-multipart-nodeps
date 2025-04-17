@@ -2,6 +2,8 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
 ## [Unreleased]
+
+## [1.3.0] - 2025-04-17
 ### Removed
 - Exception catching from `wrap-multipart-params` middleware
 - Unused `:stream :consumed` in `temp-file-store`

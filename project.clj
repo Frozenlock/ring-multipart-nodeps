@@ -1,4 +1,4 @@
-(defproject org.clojars.frozenlock/ring-multipart-nodeps "1.2.1"
+(defproject org.clojars.frozenlock/ring-multipart-nodeps "1.3.0"
   :description "Ring multipart middleware without external dependencies"
   :url "https://github.com/frozenlock/ring-multipart-nodeps"
   :license {:name "EPL-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"
