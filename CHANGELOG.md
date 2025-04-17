@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file. This change
 ## [Unreleased]
 ### Removed
 - Exception catching from `wrap-multipart-params` middleware
+- Unused `:stream :consumed` in `temp-file-store`
 
 ## [1.2.1] - 2025-04-03
 ### Changed

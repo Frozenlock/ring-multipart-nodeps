@@ -307,8 +307,7 @@
               (recur))))))
     (assoc file-info
            :tempfile tempfile
-           :size @written-bytes
-           :stream :consumed)))
+           :size @written-bytes)))
 
 ;; Use the temp-file implementation from ring-multipart-nodeps.temp-file
 (def ^:private default-store
